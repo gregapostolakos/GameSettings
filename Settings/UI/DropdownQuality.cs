@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameFramework;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Dropdown))]
 public class DropdownQuality : UIGlobalSettings {
+
+	public UnityEvent onLoaded;
 
 	private Dropdown dropdown;
 
@@ -15,17 +18,13 @@ public class DropdownQuality : UIGlobalSettings {
 
 	public override void Ini(){
 		base.Ini();
-		LocalizationManager.onUpdateLanguage.AddListener(ChangeLanguage);
+
 		if(dropdown && VideoSettings.singleton){
 			dropdown.options = GetQualityNames();
 			dropdown.value = VideoSettings.GetQualityId();
 			dropdown.onValueChanged.AddListener(VideoSettings.SetQuality);
+			onLoaded.Invoke();
 		}
-	}
-
-	public override void RemoveListeners(){
-		base.RemoveListeners();
-		LocalizationManager.onUpdateLanguage.RemoveListener(ChangeLanguage);
 	}
 
 	public override void Reset(){	
@@ -36,13 +35,8 @@ public class DropdownQuality : UIGlobalSettings {
 	private List<Dropdown.OptionData> GetQualityNames(){
 		List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
 		foreach (string item in VideoSettings.GetQualityNames()) {
-			options.Add(new Dropdown.OptionData(LocalizationManager.GetLocalizedValue(item)));
+			options.Add(new Dropdown.OptionData(item));
 		}
 		return options;
-	}
-
-	void ChangeLanguage(){
-		if(dropdown)
-			dropdown.options = GetQualityNames();
 	}
 }

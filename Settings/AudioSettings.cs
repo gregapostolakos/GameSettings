@@ -8,8 +8,8 @@ namespace GameFramework{
 public class AudioSettings : Settings{
 
 	public AudioMixer audioMixer;
-	public AnimationCurve volumeCurve = new AnimationCurve(new Keyframe(0,-80,0,450),new Keyframe(0.01f,-30,450,30),new Keyframe(1,0,30,0));
 	public AudioSave defaultSaveSettings;
+
 
 	public static AudioSettings singleton;
 	private static AudioSave currentSettings;
@@ -36,7 +36,7 @@ public class AudioSettings : Settings{
 			currentSettings = defaultSaveSettings;
 		}
 		foreach (var item in currentSettings.AudioParam) {
-			audioMixer.SetFloat(item.name,volumeCurve.Evaluate(item.value));
+			audioMixer.SetFloat(item.name,db(item.value));
 		}
 		singleton = this;
 	}
@@ -48,6 +48,8 @@ public class AudioSettings : Settings{
 	public override string GetID (){
 		return "AudioSettings";
 	}
+	
+	public static float db(float value) => value > 0.0f ? 20.0f * Mathf.Log10(value) : -80.0f;
 
 	public static void Reset(){
 		if(singleton){
@@ -71,8 +73,7 @@ public class AudioSettings : Settings{
 	}
 
 	public static void SetMixerVolume(float value, string parameterName, AudioMixer mixer){
-		float dB = value > 0.0f ? 20.0f * Mathf.Log10(value) : -80.0f;
-		mixer.SetFloat(parameterName,dB);
+		mixer.SetFloat(parameterName,db(value));
 	}
 
 	public static float GetAudioParam(string name){

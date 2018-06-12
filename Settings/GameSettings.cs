@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 namespace GameFramework{
-public class Settings : ScriptableObject{
+	
+public abstract class Settings : ScriptableObject{
 
 	public virtual string GetSave(){
 		return "";

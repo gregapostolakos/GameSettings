@@ -8,6 +8,10 @@ public class AspectUtility : MonoBehaviour {
 	public Camera cam;
 	static Camera cameraRef;
 	static Camera backgroundCam;
+
+	void Reset(){
+		cam = GetComponent<Camera>();
+	}
 	
 	void Start() {
 		if (!cam)
