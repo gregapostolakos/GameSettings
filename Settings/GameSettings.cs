@@ -53,15 +53,10 @@ public class GameSettings : Settings {
 	}
 
 	public static void SetLanguage(int i){
-		LocalizationManager.CurrentLanguage = currentSettings.language = LanguageNames()[i];
-	}
-
-	private static List<string> LanguageNames(){
-		List<string> names = new List<string>();
-		foreach (var item in LocalizationManager.SupportedLanguages) {
-			names.Add(item.Value.name);
-		}
-		return names;
+		SupportedLanguages languages=new SupportedLanguages();
+		LocalizationManager.instance.GetSupportedLanguages(languages, ()=>{
+			LocalizationManager.CurrentLanguage = currentSettings.language = languages.items[i].languageName;
+		});
 	}
 }
 }
