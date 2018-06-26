@@ -24,14 +24,12 @@ public class LocalizedTextDropdown : LocalizedTextBase{
 
 	public override void Verify() {
 		for (int i = 0; i < options.Length; i++){
-			string result = "";
 			string key = options[i].text;
-			LocalizationManager.instance.LoadLocalizedText(LocalizationManager.CurrentLanguage, key, result, ()=>{
+			LocalizationManager.instance.LoadLocalizedText(LocalizationManager.CurrentLanguage, key, (string result)=>{
 				if(!SetText(result,i)){
-					string langName="";
-					LocalizationManager.instance.DefaultLanguage(langName,()=>{
-						LocalizationManager.instance.LoadLocalizedText(langName, key, result, ()=>{
-							if(!SetText(result,i)){
+					LocalizationManager.instance.DefaultLanguage((string langName)=>{
+						LocalizationManager.instance.LoadLocalizedText(langName, key,( string result2)=>{
+							if(!SetText(result2,i)){
 								dropdown.options[i].text = options[i].text;
 								if(dropdown.value == i){
 									dropdown.captionText.text = options[i].text;

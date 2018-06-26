@@ -8,17 +8,19 @@ using System;
 
 public class DownloadFile{
 
-	public static IEnumerator Download(string filePath, string result, Action action) {
-        if (filePath.Contains("://")) {
+	public static IEnumerator Download(string filePath, Action<String> action) {
+    	string result="";
+		if (filePath.Contains("://")) {
             UnityWebRequest www = UnityWebRequest.Get(filePath);
             yield return www.SendWebRequest();
             result = www.downloadHandler.text;
         } else{
             result = System.IO.File.ReadAllText(filePath);
 		}
-		action.Invoke();
+		action.Invoke(result);
     }
 }
+
 
 [System.Serializable]
 public class SupportedLanguages{
@@ -62,11 +64,13 @@ public class LocalizationManager: MonoBehaviour{
 		instance = this;
 		DontDestroyOnLoad(gameObject);
 		if(string.IsNullOrEmpty(selectedLanguage)){
-			DefaultLanguage(selectedLanguage,() => {});
+			DefaultLanguage((string result) => {
+				selectedLanguage = result;
+			});
 		}
 	}
 	
-	private static string selectedLanguage;
+	public string selectedLanguage;
 
 	public static string languagesDirectory{ 
 		get { return Application.streamingAssetsPath +"/Languages";}
@@ -78,68 +82,72 @@ public class LocalizationManager: MonoBehaviour{
 
 	public static string CurrentLanguage{
 		get{
-			return selectedLanguage;
+			return instance.selectedLanguage;
 		}
 		set{ 
-			if(selectedLanguage.Equals(value)) return;
-			selectedLanguage = value;
+			if(instance.selectedLanguage.Equals(value)) return;
+			instance.selectedLanguage = value;
 			onUpdateLanguage.Invoke();
 		}
 	}
 
-	public void GetSupportedLanguages(SupportedLanguages supportedLanguages, Action action){
-		string jsonString="";
-		StartCoroutine(DownloadFile.Download(languagesFile,jsonString, ()=>{
-		  supportedLanguages = JsonUtility.FromJson<SupportedLanguages>(jsonString);
-		  action.Invoke();
+	public void GetSupportedLanguages(Action<SupportedLanguages> action){
+		StartCoroutine(DownloadFile.Download(languagesFile, (string jsonString)=>{
+		  	SupportedLanguages supportedLanguages = JsonUtility.FromJson<SupportedLanguages>(jsonString);
+		  	action.Invoke(supportedLanguages);
 		}));
 	}
 
-	void GetText(string filePath, string key, string result, Action action){
-		string jsonString="";
+	void GetText(string filePath, string key,Action<string> action){
 		LocalizedTexts localizedTexts=null;
-		StartCoroutine(DownloadFile.Download(filePath,jsonString, ()=>{
-		  localizedTexts = JsonUtility.FromJson<LocalizedTexts>(jsonString);
-		  LocalizationItem item = localizedTexts.items.Find(o => o.key == key);
-		  if(item != null){
-			  result = item.value;
-		  }
-		  action.Invoke();
+		StartCoroutine(DownloadFile.Download(filePath, (string jsonString)=>{
+		  	localizedTexts = JsonUtility.FromJson<LocalizedTexts>(jsonString);
+		  	LocalizationItem item = localizedTexts.items.Find(o => o.key == key);
+			string result=""; 
+		  	if(item != null){
+				result = item.value;
+		  	}
+		  	action.Invoke(result);
 		}));
 	}
 
-	public void LoadLocalizedText(string language, string key, string result, Action action){
-		SupportedLanguages supportedLanguages=null; 
-		GetSupportedLanguages(supportedLanguages, ()=>{
+	public void LoadLocalizedText(string language, string key, Action<string> action){
+		GetSupportedLanguages((SupportedLanguages supportedLanguages)=>{
 			LanguageInfo info = supportedLanguages?.items.Find(o => o.languageName == language);
 			if(info != null){
-				GetText(languagesDirectory+"/"+info.fileName+".json",key, result, ()=>{
-					action.Invoke();
+				GetText(languagesDirectory+"/"+info.fileName+".json",key, (string result)=>{
+					action.Invoke(result);
 				});
 			}
 		});
 	}
 
-	public void DefaultLanguage(string languageName, Action action){
-		SupportedLanguages supportedLanguages= new SupportedLanguages();
-		GetSupportedLanguages(supportedLanguages, ()=>{
+	public void DefaultLanguage(Action<string> action){
+		string languageName="";
+		GetSupportedLanguages((SupportedLanguages supportedLanguages)=>{
 			foreach (var item in supportedLanguages.items){
 				if (item.systemLanguage == Application.systemLanguage){
 					languageName = item.languageName;
-					action.Invoke();
+					action.Invoke(languageName);
 					return;
 				}
 			}
 			if(string.IsNullOrEmpty(languageName) && supportedLanguages.items.Count>0){
 				languageName = supportedLanguages.items[0].languageName;
 			}
-			action.Invoke();
+			action.Invoke(languageName);
+		});
+	}
+
+	public static void SetLanguage(int i){
+		LocalizationManager.instance.GetSupportedLanguages((SupportedLanguages languages)=>{
+			LocalizationManager.CurrentLanguage = languages.items[i].languageName;
 		});
 	}
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnAfterSceneLoadRuntimeMethod(){
         Debug.Log("Localization Manager Created");
-		GameObject go = new GameObject("Localization Manager",typeof(LocalizationManager));
+		new GameObject("Localization Manager",typeof(LocalizationManager));
 	}
 }

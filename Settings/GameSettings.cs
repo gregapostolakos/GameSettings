@@ -53,8 +53,7 @@ public class GameSettings : Settings {
 	}
 
 	public static void SetLanguage(int i){
-		SupportedLanguages languages=new SupportedLanguages();
-		LocalizationManager.instance.GetSupportedLanguages(languages, ()=>{
+		LocalizationManager.instance.GetSupportedLanguages((SupportedLanguages languages)=>{
 			LocalizationManager.CurrentLanguage = currentSettings.language = languages.items[i].languageName;
 		});
 	}

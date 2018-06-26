@@ -27,13 +27,11 @@ public class LocalizedTextMesh : LocalizedTextBase{
 	}
 	
 	public override void Verify() {
-		string result = "";
-		LocalizationManager.instance.LoadLocalizedText(LocalizationManager.CurrentLanguage, key, result, ()=>{
+		LocalizationManager.instance.LoadLocalizedText(LocalizationManager.CurrentLanguage, key, (string result)=>{
 			if(!SetText(result)){
-				string langName="";
-				LocalizationManager.instance.DefaultLanguage(langName,()=>{
-					LocalizationManager.instance.LoadLocalizedText(langName, key, result, ()=>{
-						if(!SetText(result)){
+				LocalizationManager.instance.DefaultLanguage((string langName)=>{
+					LocalizationManager.instance.LoadLocalizedText(langName, key,(string result2)=>{
+						if(!SetText(result2)){
 							text.text = defaultext;
 						}
 					});

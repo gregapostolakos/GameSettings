@@ -15,12 +15,15 @@ public class DropdownLanguages :UIGlobalSettings {
 
 	public override void Ini(){
 		base.Ini();
-		if(dropdown && GameSettings.singleton){
-			SupportedLanguages languages=new SupportedLanguages();
-			LocalizationManager.instance.GetSupportedLanguages(languages, ()=>{
+		if(dropdown){
+			LocalizationManager.instance.GetSupportedLanguages((SupportedLanguages languages)=>{
 				SetLanguageNames(languages);
 				CurrentLanguage();
-				dropdown.onValueChanged.AddListener(GameSettings.SetLanguage);
+				if(GameSettings.singleton)
+					dropdown.onValueChanged.AddListener(GameSettings.SetLanguage);
+				else{
+					dropdown.onValueChanged.AddListener(LocalizationManager.SetLanguage);
+				}
 			});
 		}
 	}
@@ -45,8 +48,7 @@ public class DropdownLanguages :UIGlobalSettings {
 
 	public override void Reset(){	
 		if(dropdown){
-			string ini="";
-			LocalizationManager.instance.DefaultLanguage(ini,()=>{
+			LocalizationManager.instance.DefaultLanguage((string ini)=>{
 				for (int i = 0; i <dropdown.options.Count; i++) {
 					if(dropdown.options[i].text == ini){
 						dropdown.value = i;
