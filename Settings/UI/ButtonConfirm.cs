@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using GameFramework;
+using GameSettings;
 
 public class ButtonConfirm : MonoBehaviour {
 
@@ -14,8 +14,8 @@ public class ButtonConfirm : MonoBehaviour {
 	}
 
 	public void Ini(){
-		if(button && GameMaster.singleton){
-			button.onClick.AddListener(GameMaster.Save);
+		if(button && SettingsManager.singleton){
+			button.onClick.AddListener(SettingsManager.Save);
 		}
 	}
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using GameFramework;
+using GameSettings;
 
 public class UIGlobalSettings : MonoBehaviour {
 
@@ -15,11 +15,11 @@ public class UIGlobalSettings : MonoBehaviour {
 	}
 
 	public virtual void Ini(){
-		GameMaster.ResetAddListener(Reset);
+		SettingsManager.ResetAddListener(Reset);
 	}
 
 	public virtual void RemoveListeners(){
-		GameMaster.ResetRemoveListener(Reset);
+		SettingsManager.ResetRemoveListener(Reset);
 	}
 
 	public virtual void Reset(){	

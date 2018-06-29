@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using GameFramework;
+using GameSettings;
 
 public class ButtonDefault : MonoBehaviour {
 
@@ -14,8 +14,8 @@ public class ButtonDefault : MonoBehaviour {
 
 	public void Ini(){
 		button = GetComponent<Button>();
-		if(button && GameMaster.singleton){
-			button.onClick.AddListener(GameMaster.Reset);
+		if(button && SettingsManager.singleton){
+			button.onClick.AddListener(SettingsManager.Reset);
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public  class LocalizedTextBase : MonoBehaviour {
+public abstract  class LocalizedTextBase : MonoBehaviour {
 
     public virtual void Start(){
         LocalizationManager.onUpdateLanguage.AddListener(Verify);

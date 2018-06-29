@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-namespace GameFramework{
+namespace GameSettings{
+	
 public enum QualityVideoSettings{
 	Off,
 	Low,
@@ -12,16 +13,16 @@ public enum QualityVideoSettings{
 	High
 }
 
-[CreateAssetMenu(fileName = "VideoSettings",menuName = "Settings/VideoSettings")]
+[CreateAssetMenu(fileName = "VideoSettings",menuName = "GameSettings/Video Settings", order = 3)]
 public class VideoSettings : Settings {
 
 	public float WantedAspectRatio = 1.777778f;
 	public int maxNumResolutions = 5;
 	public VideoSave defaultSaveSettings;
+	public VideoSave currentSettings;
+	public UnityEvent onUpdateResolution = new UnityEvent();
 	
 	public static VideoSettings singleton;
-	public static UnityEvent onUpdateResolution = new UnityEvent();
-	private static VideoSave currentSettings;
 
 	[System.Serializable]
 	public class VideoSave{
@@ -30,7 +31,11 @@ public class VideoSettings : Settings {
 		[Range(0,2)]
 		public float contrast= 1f;
 		public bool HDR;
-		public QualityVideoSettings SSAO = QualityVideoSettings.Medium; 
+		public QualityVideoSettings SSAO = QualityVideoSettings.Medium;
+
+		public VideoSave ShallowCopy(){
+			return (VideoSave) this.MemberwiseClone();
+		}
 	}
 
 	public override void Load(string s){	
@@ -40,17 +45,13 @@ public class VideoSettings : Settings {
 		if(save != null){
 			currentSettings = save;
 		}else{
-			currentSettings = defaultSaveSettings;
+			currentSettings = defaultSaveSettings.ShallowCopy();
 		}
 		singleton = this;
 	}
 
 	public override string GetSave (){
 		return JsonUtility.ToJson(currentSettings);
-	}
-
-	public override string GetID (){
-		return "VideoSettings";
 	}
 
 	public static void SetQuality(int i){
@@ -67,8 +68,8 @@ public class VideoSettings : Settings {
 
 	public static void SetResolution(int i){
 		Screen.SetResolution(GetResolutions[i].width, GetResolutions[i].height,GetFullScreen());
-		if(GameMaster.singleton && singleton)
-			GameMaster.singleton.StartCoroutine(singleton.CheckResolution());
+		if(SettingsManager.singleton && singleton)
+			SettingsManager.singleton.StartCoroutine(singleton.CheckResolution());
 	}
 
 	public static int GetResolutionId() {
@@ -106,8 +107,8 @@ public class VideoSettings : Settings {
 
 	public static void SetFullScreen(bool b){
 		Screen.fullScreen = b;
-		if(GameMaster.singleton && singleton)
-			GameMaster.singleton.StartCoroutine(singleton.CheckResolution());
+		if(SettingsManager.singleton && singleton)
+			SettingsManager.singleton.StartCoroutine(singleton.CheckResolution());
 	}
 
 	public static bool GetFullScreen() {

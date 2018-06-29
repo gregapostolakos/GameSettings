@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using GameFramework;
+using GameSettings;
 
 [RequireComponent(typeof(Dropdown))]
 public class DropdownResolutions :UIGlobalSettings {

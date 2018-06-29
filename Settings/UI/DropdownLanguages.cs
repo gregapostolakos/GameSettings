@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using GameFramework;
+using GameSettings;
 
 [AddComponentMenu("Localization/DropdownLanguages"),RequireComponent(typeof(Dropdown))]
 public class DropdownLanguages :UIGlobalSettings {
@@ -19,8 +19,8 @@ public class DropdownLanguages :UIGlobalSettings {
 			LocalizationManager.instance.GetSupportedLanguages((SupportedLanguages languages)=>{
 				SetLanguageNames(languages);
 				CurrentLanguage();
-				if(GameSettings.singleton)
-					dropdown.onValueChanged.AddListener(GameSettings.SetLanguage);
+				if(LanguageSettings.singleton)
+					dropdown.onValueChanged.AddListener(LanguageSettings.SetLanguage);
 				else{
 					dropdown.onValueChanged.AddListener(LocalizationManager.SetLanguage);
 				}

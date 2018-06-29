@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using GameFramework;
+using GameSettings;
 
 public class AspectUtility : MonoBehaviour {
 	
@@ -25,9 +25,9 @@ public class AspectUtility : MonoBehaviour {
 		}
 		if(cam)
 			cameraRef = cam;
-		if(aspectRatioFromSettings){
+		if(aspectRatioFromSettings && VideoSettings.singleton){
 			wantedAspectRatio = VideoSettings.GetAspectRatio();
-			VideoSettings.onUpdateResolution.AddListener(UpdateCam);
+			VideoSettings.singleton.onUpdateResolution.AddListener(UpdateCam);
 		}
 		SetCam();
 	}
@@ -41,8 +41,8 @@ public class AspectUtility : MonoBehaviour {
 	}
 
 	void OnDestroy(){
-		if(aspectRatioFromSettings){
-			VideoSettings.onUpdateResolution.RemoveListener(UpdateCam);
+		if(aspectRatioFromSettings && VideoSettings.singleton){
+			VideoSettings.singleton.onUpdateResolution.RemoveListener(UpdateCam);
 		}
 	}
 	

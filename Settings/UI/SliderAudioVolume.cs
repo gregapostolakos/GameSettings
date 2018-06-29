@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using GameFramework;
+using GameSettings;
 
 public class SliderAudioVolume : UIGlobalSettings {
 
@@ -15,14 +15,14 @@ public class SliderAudioVolume : UIGlobalSettings {
 
 	public override void Ini(){
 		base.Ini();
-		if(slider && GameFramework.AudioSettings.singleton){
-			slider.value = GameFramework.AudioSettings.GetAudioParam(paramName);
+		if(slider && GameSettings.AudioSettings.singleton){
+			slider.value = GameSettings.AudioSettings.GetAudioParam(paramName);
 			slider.onValueChanged.AddListener(SetMusic);
 		}
 	}
 
 	public void SetMusic(float value){
-		GameFramework.AudioSettings.SetAudioParam(paramName,value);
+		GameSettings.AudioSettings.SetAudioParam(paramName,value);
 	}
 
 	public override void Reset(){	

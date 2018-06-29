@@ -7,90 +7,75 @@ using System.ComponentModel;
 using Steamworks;
 #endif
 
-namespace GameFramework{
-public class SaveInfoBase{
-	public virtual string SaveName(){
-		return "Save";
-	}
-}
+namespace GameSettings{
 
-[Serializable]
-public class SaveGame<T>where T:SaveInfoBase{
+	public abstract class ScriptableSaveBase<T>: ScriptableObject{
 
-   	private static T instance = default(T);
-	private static int slot;
+		public string saveName="Save";
+		public int slot;
+		public bool loaded;
+		[SerializeField]
+		protected T save;
 
-	public static T Instance{
-		get{
-			if (instance==null)
-				Load();
-			return instance;
+		public T Instance{
+			get{
+				if (!loaded){
+					save = Load();
+					loaded = true;
+				}return save;
+			}
+		}
+
+		public virtual void Save(){
+			SaveGame<T>.Save(save,saveName,slot);
+		}
+
+		public T Load(){
+			return SaveGame<T>.Load(saveName,slot);
 		}
 	}
 
-	public static void Save(){
-		SetSlot(instance,slot);
-	}
+	[Serializable]
+	public class SaveGame<T>{
 
-	public static void SetSlot(T instance, int slotId){
-		if(IsSteam()){
+		public static void Save(T instance, string saveName, int slot=0){	
 			#if STEAM
 			string json = JsonUtility.ToJson(instance);
-	        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(json);
-			bool resp = SteamRemoteStorage.FileWrite(instance.SaveName()+""+slotId,bytes,bytes.Length);
-			#endif
-		}else{
-			PlayerPrefs.SetString(instance.SaveName()+""+slotId,JsonUtility.ToJson(instance));
+			byte[] bytes = System.Text.Encoding.UTF8.GetBytes(json);
+			bool resp = SteamRemoteStorage.FileWrite(saveName+""+slot,bytes,bytes.Length);
+			#else
+			PlayerPrefs.SetString(saveName+""+slot,JsonUtility.ToJson(instance));
 			PlayerPrefs.Save();
+			#endif
 		}
-		slot = slotId;
-	}
 
-	public static void Load(int slotId=0){
-		instance = GetSlot(slotId);
-		slot = slotId;
-		if(instance == null){
-			instance = Activator.CreateInstance<T>();
-		}
-	}
-
-	public static T GetSlot(int slotId){
-		
-		if(IsSteam()){
+		public static T Load(string saveName, int slot=0){
 			#if STEAM
-			if(SteamRemoteStorage.FileExists(Activator.CreateInstance<T>().SaveName()+""+slotId)){
+			if(SteamRemoteStorage.FileExists(saveName+""+slot)){
 				byte[] bytes = new byte[1024*1024];
-				int ret = SteamRemoteStorage.FileRead(Activator.CreateInstance<T>().SaveName()+""+slotId,bytes,bytes.Length);
+				int ret = SteamRemoteStorage.FileRead(saveName+""+slot,bytes,bytes.Length);
 				string data = System.Text.Encoding.UTF8.GetString(bytes, 0, ret);
 				return JsonUtility.FromJson<T>(data);
 			}
-			#endif
-		}else{
-			string result = PlayerPrefs.GetString(Activator.CreateInstance<T>().SaveName()+""+slotId,"");	
-			if(result != "") {
+			#else
+			string result = PlayerPrefs.GetString(saveName+""+slot,"");	
+			if(!string.IsNullOrEmpty(result)) {
 				return JsonUtility.FromJson<T>(result);
 			}
+			#endif
+			return Activator.CreateInstance<T>();
 		}
-		return default(T);	
-	}
 
-	public static List<T> GetSlots(){
-		List<T> slots= new List<T>();
-		int id = 0;
-		T slot = GetSlot(id);
-		while(slot != null){
-			slots.Add(slot);
-			id++;
-			slot = GetSlot(id);
-		} 
-		return slots;
+		public static List<T> GetSlots(string saveName){
+			List<T> slots= new List<T>();
+			int id = 0;
+			T slot = Load(saveName, id);
+			while(slot != null){
+				slots.Add(slot);
+				id++;
+				slot = Load(saveName, id);;
+			} 
+			return slots;
+		}	
 	}
-
-	private static bool IsSteam(){
-		#if STEAM
-		return true;
-		#endif
-		return false;
-	}	
-}
 }
