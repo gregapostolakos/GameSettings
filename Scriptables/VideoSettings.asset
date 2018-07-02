@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: VideoSettings
   m_EditorClassIdentifier: 
   WantedAspectRatio: 1.777778
-  maxNumResolutions: 5
+  maxNumResolutions: 15
   defaultSaveSettings:
     brightness: 1
     contrast: 1

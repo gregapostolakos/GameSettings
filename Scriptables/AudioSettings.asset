@@ -11,8 +11,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f969fc4fe80b4745aced91677e8750e, type: 3}
   m_Name: AudioSettings
   m_EditorClassIdentifier: 
-  audioMixer: {fileID: 0}
+  audioMixer: {fileID: 24100000, guid: bb84d8cd49d20f441ab696e76c2ee53c, type: 2}
   defaultSaveSettings:
-    AudioParam: []
+    AudioParam:
+    - name: Effects
+      value: 0.8
+    - name: Music
+      value: 0.8
   currentSettings:
-    AudioParam: []
+    AudioParam:
+    - name: Effects
+      value: 0.8127991
+    - name: Music
+      value: 0.8
