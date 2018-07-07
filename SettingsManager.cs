@@ -54,8 +54,7 @@ namespace GameSettings{
 
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		public static void CreateInstance(){
-			GameObject go = new GameObject("SettingsManager",typeof(SettingsManager));
-			//Debug.Log(Resources.Load<SettingsGroup>("SettingsGroup"));
+			new GameObject("SettingsManager",typeof(SettingsManager));
 		}
 	}
 }
