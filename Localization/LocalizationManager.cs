@@ -92,6 +92,7 @@ public class LocalizationManager: MonoBehaviour{
 	}
 
 	public void GetSupportedLanguages(Action<SupportedLanguages> action){
+		if(!File.Exists(languagesFile)) return;
 		StartCoroutine(DownloadFile.Download(languagesFile, (string jsonString)=>{
 		  	SupportedLanguages supportedLanguages = JsonUtility.FromJson<SupportedLanguages>(jsonString);
 		  	action.Invoke(supportedLanguages);
