@@ -68,8 +68,9 @@ public class VideoSettings : Settings {
 
 	public static void SetResolution(int i){
 		Screen.SetResolution(GetResolutions[i].width, GetResolutions[i].height,GetFullScreen());
-		if(SettingsManager.singleton && singleton)
+		if(SettingsManager.singleton && singleton){
 			SettingsManager.singleton.StartCoroutine(singleton.CheckResolution());
+		}
 	}
 
 	public static int GetResolutionId() {
@@ -107,8 +108,9 @@ public class VideoSettings : Settings {
 
 	public static void SetFullScreen(bool b){
 		Screen.fullScreen = b;
-		if(SettingsManager.singleton && singleton)
+		if(SettingsManager.singleton && singleton){
 			SettingsManager.singleton.StartCoroutine(singleton.CheckResolution());
+		}
 	}
 
 	public static bool GetFullScreen() {
@@ -121,11 +123,11 @@ public class VideoSettings : Settings {
 	}
 
 	IEnumerator CheckResolution(){
-		yield return new WaitForSeconds(0.3f);
+		yield return new WaitForSecondsRealtime(0.3f);
 		UpdateAspectRatio();
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSecondsRealtime(1f);
 		UpdateAspectRatio();
-		yield return new WaitForSeconds(1.5f);
+		yield return new WaitForSecondsRealtime(1.5f);
 		UpdateAspectRatio();
 	}
 

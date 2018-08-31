@@ -16,8 +16,9 @@ namespace GameSettings{
 		public static SettingsManager singleton;
 		private UnityEvent onReset = new UnityEvent();
 
-		public void Start(){
-			if(singleton || !saveSettings){ 
+		public void Awake(){
+			saveSettings = Resources.Load<SettingsGroup>("SettingsGroup");
+			if(singleton || !saveSettings){
 				Destroy(gameObject);
 				return;
 			}

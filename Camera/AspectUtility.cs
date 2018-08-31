@@ -34,6 +34,7 @@ public class AspectUtility : MonoBehaviour {
 
 	public void UpdateCam(){
 		if(aspectRatioFromSettings){
+			Debug.LogError("event2");
 			wantedAspectRatio = VideoSettings.GetAspectRatio();
 		}
 		cam = GetComponent<Camera>();

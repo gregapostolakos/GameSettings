@@ -15,7 +15,7 @@ public class DropdownResolutions :UIGlobalSettings {
 
 	public override void Ini(){
 		base.Ini();
-		if(dropdown && VideoSettings.singleton){
+		if(dropdown){
 			dropdown.options = GetResolutionsNames();
 			dropdown.value =  VideoSettings.GetResolutionId();
 			dropdown.onValueChanged.AddListener(VideoSettings.SetResolution);
@@ -23,7 +23,7 @@ public class DropdownResolutions :UIGlobalSettings {
 	}
 
 	public override void Reset(){	
-		if(dropdown && VideoSettings.singleton){
+		if(dropdown){
 			int i = VideoSettings.ResetResolution();
 			if(i>=0)
 				dropdown.value = i;
