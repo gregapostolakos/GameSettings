@@ -47,6 +47,7 @@ namespace GameSettings{
 				currentSettings = defaultSaveSettings.ShallowCopy();
 			}
 			if(!string.IsNullOrEmpty(currentSettings.language)){
+				if(!LocalizationManager.instance) LocalizationManager.OnAfterSceneLoadRuntimeMethod();
 				LocalizationManager.instance.GetSupportedLanguages((SupportedLanguages languages)=>{
 					if(languages.items.Find(o => o.languageName.Equals(singleton.currentSettings.language)) != null){
 						LocalizationManager.CurrentLanguage = singleton.currentSettings.language;

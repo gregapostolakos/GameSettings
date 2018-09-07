@@ -11,12 +11,13 @@ namespace GameSettings{
 
 	public class SettingsManager: MonoBehaviour{
 
+		[EditScriptable]
 		public SettingsGroup saveSettings;
 		
 		public static SettingsManager singleton;
 		private UnityEvent onReset = new UnityEvent();
 
-		public void Awake(){
+		public void Start(){
 			saveSettings = Resources.Load<SettingsGroup>("SettingsGroup");
 			if(singleton || !saveSettings){
 				Destroy(gameObject);

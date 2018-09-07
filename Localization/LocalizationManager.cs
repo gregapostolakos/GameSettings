@@ -146,8 +146,8 @@ public class LocalizationManager: MonoBehaviour{
 		});
 	}
 
-	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void OnAfterSceneLoadRuntimeMethod(){
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public static void OnAfterSceneLoadRuntimeMethod(){
         Debug.Log("Localization Manager Created");
 		new GameObject("Localization Manager",typeof(LocalizationManager));
 	}

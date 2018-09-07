@@ -7,6 +7,7 @@ namespace GameSettings{
 	public class SettingsGroup: ScriptableObject{
 
 		public string saveName="Settings";
+		[EditScriptable]
 		public List<Settings> settings = new List<Settings>();
 
 		[System.Serializable]
