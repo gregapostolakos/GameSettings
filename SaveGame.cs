@@ -13,16 +13,24 @@ namespace GameSettings{
 
 		public string saveName="Save";
 		public int slot;
-		public bool loaded;
+		public bool loadFromEditor;
 		[SerializeField]
 		protected T save;
 
+		private bool loaded;
+
 		public T Instance{
 			get{
+				#if UNITY_EDITOR
+				if(loadFromEditor){
+					loaded = true;
+				}
+				#endif
 				if (!loaded){
 					save = Load();
 					loaded = true;
-				}return save;
+				}
+				return save;
 			}
 		}
 
