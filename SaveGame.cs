@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
 #if STEAM
 using System.ComponentModel;
 using Steamworks;
@@ -17,13 +18,15 @@ namespace GameSettings{
 		[SerializeField]
 		protected T save;
 
+		[NonSerialized]
 		private bool loaded;
 
 		public T Instance{
 			get{
 				#if UNITY_EDITOR
-				if(loadFromEditor){
+				if(loadFromEditor && !loaded){
 					loaded = true;
+					LoadEditor();
 				}
 				#endif
 				if (!loaded){
@@ -41,16 +44,22 @@ namespace GameSettings{
 		public T Load(){
 			return SaveGame<T>.Load(saveName,slot);
 		}
+
+		public virtual void LoadEditor(){}
 	}
 
 	[Serializable]
 	public class SaveGame<T>{
+
 
 		public static void Save(T instance, string saveName, int slot=0){	
 			#if STEAM
 			string json = JsonUtility.ToJson(instance);
 			byte[] bytes = System.Text.Encoding.UTF8.GetBytes(json);
 			bool resp = SteamRemoteStorage.FileWrite(saveName+""+slot,bytes,bytes.Length);
+			#elif UNITY_EDITOR
+			string path = Application.dataPath+"/"+saveName+""+slot+".json";
+			File.WriteAllText(path, JsonUtility.ToJson(instance,true));
 			#else
 			PlayerPrefs.SetString(saveName+""+slot,JsonUtility.ToJson(instance));
 			PlayerPrefs.Save();
@@ -65,6 +74,12 @@ namespace GameSettings{
 				string data = System.Text.Encoding.UTF8.GetString(bytes, 0, ret);
 				return JsonUtility.FromJson<T>(data);
 			}
+			#elif UNITY_EDITOR
+			string path = Application.dataPath+"/"+saveName+""+slot+".json";
+			if(File.Exists(path)){
+				string result = File.ReadAllText(path);
+				return JsonUtility.FromJson<T>(result);
+			}	
 			#else
 			string result = PlayerPrefs.GetString(saveName+""+slot,"");	
 			if(!string.IsNullOrEmpty(result)) {
