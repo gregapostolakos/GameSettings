@@ -27,7 +27,6 @@ namespace GameSettings{
 		}
 
 		public void Save(){
-			Debug.Log("list");
 			SaveStrings sav = new SaveStrings();
 			foreach (var item in settings) {
 				Debug.Log(item.GetID());
