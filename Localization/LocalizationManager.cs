@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.Networking;
 using System;
+using Steamworks;
 
 public class DownloadFile{
 
@@ -18,7 +19,7 @@ public class DownloadFile{
             result = System.IO.File.ReadAllText(filePath);
 		}
 		action.Invoke(result);
-    }
+	}
 }
 
 
@@ -31,6 +32,7 @@ public class SupportedLanguages{
 public class LanguageInfo{
 	public string languageName = "English";
 	public string fileName;
+	public string steamAPIName = "english";
 	public SystemLanguage systemLanguage = SystemLanguage.Unknown;
 }
 
@@ -126,23 +128,66 @@ public class LocalizationManager: MonoBehaviour{
 	public void DefaultLanguage(Action<string> action){
 		string languageName="";
 		GetSupportedLanguages((SupportedLanguages supportedLanguages)=>{
-			foreach (var item in supportedLanguages.items){
-				if (item.systemLanguage == Application.systemLanguage){
-					languageName = item.languageName;
-					action.Invoke(languageName);
-					return;
-				}
-			}
-			if(string.IsNullOrEmpty(languageName) && supportedLanguages.items.Count>0){
-				languageName = supportedLanguages.items[0].languageName;
-			}
-			action.Invoke(languageName);
+#if STEAM
+			if (SetSteamLanguage(action, supportedLanguages, ref languageName)) return;
+#endif
+			if (SetSysemLanguage(action, supportedLanguages, ref languageName)) return;
+			SetFirstLanguageAvailable(action, languageName, supportedLanguages);
 		});
 	}
 
+	private static void SetFirstLanguageAvailable(Action<string> action, string languageName,
+		SupportedLanguages supportedLanguages)
+	{
+		if (string.IsNullOrEmpty(languageName) && supportedLanguages.items.Count > 0)
+		{
+			languageName = supportedLanguages.items[0].languageName;
+		}
+
+		action.Invoke(languageName);
+	}
+
+	private static bool SetSysemLanguage(Action<string> action, SupportedLanguages supportedLanguages, ref string languageName)
+	{
+		foreach (var item in supportedLanguages.items)
+		{
+			if (item.systemLanguage == Application.systemLanguage)
+			{
+				languageName = item.languageName;
+				action.Invoke(languageName);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+#if STEAM
+	private static bool SetSteamLanguage(Action<string> action, SupportedLanguages supportedLanguages, ref string languageName)
+	{
+		string steamLanguage = SteamApps.GetCurrentGameLanguage();
+		foreach (var item in supportedLanguages.items)
+		{
+			if (item.steamAPIName == steamLanguage)
+			{
+				languageName = item.languageName;
+				action.Invoke(languageName);
+				return true;
+			}
+		}
+		return false;
+	}
+#endif
+
+	[ContextMenu("UpdateLanguage")]
+	public void UpdateLanguage()
+	{
+		onUpdateLanguage.Invoke();
+	}
+
 	public static void SetLanguage(int i){
-		LocalizationManager.instance.GetSupportedLanguages((SupportedLanguages languages)=>{
-			LocalizationManager.CurrentLanguage = languages.items[i].languageName;
+		instance.GetSupportedLanguages((SupportedLanguages languages)=>{
+			CurrentLanguage = languages.items[i].languageName;
 		});
 	}
 

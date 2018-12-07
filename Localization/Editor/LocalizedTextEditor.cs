@@ -97,7 +97,7 @@ public class LocalizedTextEditor : EditorWindow{
 		if (GUILayout.Button ("Load Languages")) {
 			LoadLanguagesData();
 		}
-		if (GUILayout.Button ("Create new laguage list")) {
+		if (GUILayout.Button ("Create new language list")) {
 			CreateNewLanguagesData();
 		}
     }
