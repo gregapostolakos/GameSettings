@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.Networking;
 using System;
+#if STEAM
 using Steamworks;
+#endif
 
 public class DownloadFile{
 
@@ -52,7 +54,11 @@ public class LocalizationItem{
 public class LocalizationManager: MonoBehaviour{
 
     public static UnityEvent onUpdateLanguage = new UnityEvent();
+
 	public static LocalizationManager instance;
+	
+	[SerializeField]
+	private string selectedLanguage;
 
 	private void Awake() {
 		Ini();
@@ -65,14 +71,22 @@ public class LocalizationManager: MonoBehaviour{
 		}
 		instance = this;
 		DontDestroyOnLoad(gameObject);
-		if(string.IsNullOrEmpty(selectedLanguage)){
-			DefaultLanguage((string result) => {
-				selectedLanguage = result;
-			});
+
+#if STEAM
+		this.InvokeWhen(SetDefault, () => SteamManager.Initialized);
+#else
+		SetDefault();
+#endif
+	}
+
+	private void SetDefault()
+	{
+		if (string.IsNullOrEmpty(selectedLanguage))
+		{
+			DefaultLanguage((string result) => { selectedLanguage = result; });
 		}
 	}
-	
-	public string selectedLanguage;
+
 
 	public static string languagesDirectory{ 
 		get { return Application.streamingAssetsPath +"/Languages";}
@@ -165,6 +179,8 @@ public class LocalizationManager: MonoBehaviour{
 #if STEAM
 	private static bool SetSteamLanguage(Action<string> action, SupportedLanguages supportedLanguages, ref string languageName)
 	{
+		if (!SteamManager.Initialized)
+			return false;
 		string steamLanguage = SteamApps.GetCurrentGameLanguage();
 		foreach (var item in supportedLanguages.items)
 		{
